@@ -39,17 +39,15 @@ import java.util.List;
 //SurfaceHolder.Callback , Camera.PreviewCallback
 public class MainActivity extends Activity implements SurfaceHolder.Callback , Camera.PreviewCallback{
 
+    private static final String TAG = "MainActivity";
+    public Mat mRgba, mGray, mYuv;
+    Camera mCamera;
+    SurfaceView mPreview;
+    public int height,width;
 
     static{
         System.loadLibrary("MyOpencvLibs");
     }
-
-    private static final String TAG = "MainActivity";
-    Mat mRgba, mGray, mYuv;
-
-    Camera mCamera;
-    SurfaceView mPreview;
-    public int height,width;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +112,6 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
             Log.i(TAG,"Opencv not loaded");
         }
     }
-
-
 
 
     @Override
@@ -183,17 +179,22 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
         mGray = new Mat( mRgba.rows(), mRgba.cols(), CvType.CV_8UC1 );
 
         // Call Native Class
-        OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-
-        // Initial bitmap
-        Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
-
-        // Convert Mat image to bitmap for display result
-        Utils.matToBitmap(mGray, bitmap);
-
-        // Display result on imageview
-        ImageView iv = (ImageView) findViewById(R.id.result_image);
-        iv.setImageBitmap(bitmap);
+        con_opencv();
+//        connectOpencv concv = new connectOpencv();
+//        if(concv.getStatus() != AsyncTask.Status.RUNNING){
+//            concv.doInBackground();
+//        }
+//        OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+//
+//        // Initial bitmap
+//        Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
+//
+//        // Convert Mat image to bitmap for display result
+//        Utils.matToBitmap(mGray, bitmap);
+//
+//        // Display result on imageview
+//        ImageView iv = (ImageView) findViewById(R.id.result_image);
+//        iv.setImageBitmap(bitmap);
 
 //        if(arg0 != null) {
 //            final byte[] finalArg = arg0;
@@ -209,51 +210,64 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
 //        }
     }
 
+    public void con_opencv(){
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                // Call Native Class
+                OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+                return 1;
+            }
+
+            @Override
+            protected void onPostExecute(Integer result) {
+//                super.onPostExecute(aVoid);
+                if(result == 1){
+                    // Initial bitmap
+                    Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
+
+                    // Convert Mat image to bitmap for display result
+                    Utils.matToBitmap(mGray, bitmap);
+
+                    // Display result on imageview
+                    ImageView iv = (ImageView) findViewById(R.id.result_image);
+                    iv.setImageBitmap(bitmap);
+                }
+            }
+        }.execute();
+    }
 
 
-//    public class connectOpencv extends AsyncTask<Void, Void, Void> {
-//
-//        public int[] rgbs;
-//
-//        public Bitmap bitmap;
-//        public int retVal;
-//        public int w, h;
-//        public byte[] arg;
-//
-//        public void connectOpencv(final byte[] arg, final int w, final int h) {
-//            this.arg = arg;
-//            this.w = w;
-//            this.h = h;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            System.out.println("w = " + w + " h = " + h);
-//            rgbs = new int[w * h];
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            System.out.println("w = " + w + " h = " + h);
-//            rgbs = new int[w * h];
-//            decodeYUV420(rgbs, rotateYUV420Degree90(arg, w, h), w, h);
-//            bitmap = Bitmap.createBitmap(rgbs, h, w, Bitmap.Config.ARGB_8888);
-//            Utils.bitmapToMat(bitmap, mRgba);
-//            retVal = OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-//            if(retVal == 1){
-//                Log.d("doInBackground","Convert to gray sucessful");
-//            }
-//
-//            return null;
-//        }
 
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            super.onPostExecute(aVoid);
-//
-//        }
-//
-//    }
+    public class connectOpencv extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Call Native Class
+            OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            // Initial bitmap
+            Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
+
+            // Convert Mat image to bitmap for display result
+            Utils.matToBitmap(mGray, bitmap);
+
+            // Display result on imageview
+            ImageView iv = (ImageView) findViewById(R.id.result_image);
+            iv.setImageBitmap(bitmap);
+        }
+
+    }
 
 }
