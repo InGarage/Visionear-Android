@@ -21,7 +21,12 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_com_penguinz_testopencvndk_OpencvNativeClass_convertGray
   (JNIEnv *, jclass, jlong, jlong);
 
+JNIEXPORT jint JNICALL Java_com_penguinz_testopencvndk_OpencvNativeClass_donothing
+        (JNIEnv *, jclass, jlong, jlong);
+
 int toGray(Mat img, Mat& gray);
+
+int doNothing(Mat img, Mat& gray);
 
 #ifdef __cplusplus
 }

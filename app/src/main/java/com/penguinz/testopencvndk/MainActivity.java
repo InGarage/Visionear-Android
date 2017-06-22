@@ -215,7 +215,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
             @Override
             protected Integer doInBackground(Void... params) {
                 // Call Native Class
-                OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+//                OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+                OpencvNativeClass.donothing(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
                 return 1;
             }
 

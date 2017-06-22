@@ -2,5 +2,9 @@
     {
         "outputFile": "D:\\iKringz\\Backup\\AndroidStudioProjects\\TestOpencvNDK\\libs\\opencv\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
         "map": []
+    },
+    {
+        "outputFile": "D:\\MyAndroidProject\\TestOpencvNDK\\libs\\opencv\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": []
     }
 ]

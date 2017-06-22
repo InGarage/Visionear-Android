@@ -7,4 +7,5 @@ package com.penguinz.testopencvndk;
 public class OpencvNativeClass {
     public native static int convertGray(long MatAddrRgba, long MatAddrGray);
 
+    public native static int donothing(long MatAddrRgba, long MatAddrGray);
 }
