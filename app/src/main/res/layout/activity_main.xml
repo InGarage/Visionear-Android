@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/main_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.penguinz.testopencvndk.MainActivity">
+    android:layout_height="match_parent">
+
+    <!--<android.support.design.widget.TabLayout-->
+        <!--android:id="@+id/tab_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:elevation="6dp"-->
+        <!--android:minHeight="?attr/actionBarSize"-->
+        <!--app:tabBackground="@drawable/tab_selector_color"-->
+        <!--app:tabIndicatorColor="@color/tab_main_background_selected"-->
+        <!--app:tabTextColor="#292A3F" />-->
+
+    <!--<android.support.v4.view.ViewPager-->
+        <!--android:id="@+id/pager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:layout_marginBottom="8dp" />-->
 
     <SurfaceView
         android:id="@+id/preview"
@@ -23,10 +41,10 @@
         android:id="@+id/Result_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:background="@color/resultTab"
-        android:paddingTop="15dp">
+        android:paddingTop="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <TextView
             android:id="@+id/result_text"
@@ -52,28 +70,14 @@
         android:layout_alignParentStart="true">
 
         <TextView
-            android:id="@+id/tab1"
+            android:id="@+id/tvMode"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@drawable/border"
-            android:text="Barcode"
-            android:textAlignment="center"
-            android:textColor="@color/resultText"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tab2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@drawable/border"
-            android:text="Color"
-            android:textAlignment="center"
-            android:textColor="@color/resultText"
-            android:textSize="30sp"
-            android:textStyle="bold" />
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Mode"
+            android:textColor="#f5f5f5"
+            android:textSize="24sp" />
     </LinearLayout>
 
 </RelativeLayout>

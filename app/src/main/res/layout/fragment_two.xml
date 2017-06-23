@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <SurfaceView
+        android:id="@+id/preview1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <ImageView
+        android:id="@+id/result_image1"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_below="@+id/Result_layout1"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp" />
+
+    <RelativeLayout
+        android:id="@+id/Result_layout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/resultTab"
+        android:paddingTop="15dp">
+
+        <TextView
+            android:id="@+id/result_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="false"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="false"
+            android:text="Result"
+            android:textAlignment="textStart"
+            android:textColor="@color/resultText"
+            android:textSize="30sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

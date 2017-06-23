@@ -5,4 +5,10 @@
     <color name="colorAccent">#FF4081</color>
     <color name="resultText">#F5F5F5</color>
     <color name="resultTab">#212121</color>
+
+
+    <color name="tab_main_background_selected">#636363</color>
+    <color name="tab_main_background_unselected">#4e4f54</color>
+
+
 </resources>

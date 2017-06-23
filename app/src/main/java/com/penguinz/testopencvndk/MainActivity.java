@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.AsyncTask;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.penguinz.testopencvndk.Adapter.PageAdapter;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -37,13 +41,47 @@ import java.util.List;
 
 //CameraBridgeViewBase.CvCameraViewListener2
 //SurfaceHolder.Callback , Camera.PreviewCallback
-public class MainActivity extends Activity implements SurfaceHolder.Callback , Camera.PreviewCallback{
+public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback , Camera.PreviewCallback {
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//        tabLayout.addTab(tabLayout.newTab().setText("Grayscale"));
+//        tabLayout.addTab(tabLayout.newTab().setText("Color"));
+//        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+//
+//        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+//        final PageAdapter adapter = new PageAdapter
+//                (getSupportFragmentManager(), tabLayout.getTabCount());
+//        viewPager.setAdapter(adapter);
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
+//    }
 
     private static final String TAG = "MainActivity";
     public Mat mRgba, mGray, mYuv;
     Camera mCamera;
     SurfaceView mPreview;
-    public int height,width;
+    public int height,width, mode = 0, max_mode = 1;
+    public String str_mode[];
 
     static{
         System.loadLibrary("MyOpencvLibs");
@@ -63,29 +101,31 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
         mPreview.getHolder().addCallback(this);
         mPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+        str_mode = new String[2];
+        str_mode[0] = "Grayscale";
+        str_mode[1] = "Color";
+
+        final TextView tvMode = (TextView)findViewById(R.id.tvMode);
+        tvMode.setText(str_mode[mode]);
+        mPreview.setOnTouchListener(new onSwipeListener(MainActivity.this) {
+            public void onSwipeTop() {
+                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
+                if(mode != max_mode){
+                    mode = mode + 1;
+                    tvMode.setText(str_mode[mode]);
+                }
+            }
+            public void onSwipeBottom() {
+                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
+                if(mode != 0){
+                    mode = mode - 1;
+                    tvMode.setText(str_mode[mode]);
+                }
+            }
+
+        });
+
         final TextView result_text = (TextView)findViewById(R.id.result_text);
-//        mPreview.setOnTouchListener(new onSwipeListener(MainActivity.this) {
-//            public void onSwipeTop() {
-////                result_text.setText("Top");
-////                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
-//            }
-//            public void onSwipeRight() {
-//
-////                Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
-//            }
-//            public void onSwipeLeft() {
-////                result_text.setText(String.valueOf(count));
-////                if(count > 0){
-////                    count = count - 1;
-////                }
-//
-////                Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
-//            }
-//            public void onSwipeBottom() {
-////                result_text.setText("Bottom");
-////                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
     }
 
@@ -179,44 +219,22 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
         mGray = new Mat( mRgba.rows(), mRgba.cols(), CvType.CV_8UC1 );
 
         // Call Native Class
-        con_opencv();
-//        connectOpencv concv = new connectOpencv();
-//        if(concv.getStatus() != AsyncTask.Status.RUNNING){
-//            concv.doInBackground();
-//        }
-//        OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-//
-//        // Initial bitmap
-//        Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
-//
-//        // Convert Mat image to bitmap for display result
-//        Utils.matToBitmap(mGray, bitmap);
-//
-//        // Display result on imageview
-//        ImageView iv = (ImageView) findViewById(R.id.result_image);
-//        iv.setImageBitmap(bitmap);
-
-//        if(arg0 != null) {
-//            final byte[] finalArg = arg0;
-//
-//            connectOpencv concv = new connectOpencv();
-//            if(concv.getStatus() != AsyncTask.Status.RUNNING){
-//                int w = mCamera.getParameters().getPreviewSize().width;
-//                int h = mCamera.getParameters().getPreviewSize().height;
-//                concv.connectOpencv(finalArg, w, h);
-////                concv.onPreExecute();
-//                concv.doInBackground();
-//            }
-//        }
+        con_opencv(mode);
     }
 
-    public void con_opencv(){
+    public void con_opencv(final int mode){
         new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... params) {
                 // Call Native Class
-//                OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-                OpencvNativeClass.donothing(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+                if(mode == 0){
+                    Log.d("doInBackground","Mode = "+mode);
+                    OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+                }
+                else if(mode == 1){
+                    Log.d("doInBackground","Mode = "+mode);
+                    OpencvNativeClass.donothing(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
+                }
                 return 1;
             }
 
@@ -238,37 +256,5 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback , C
         }.execute();
     }
 
-
-
-    public class connectOpencv extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            // Call Native Class
-            OpencvNativeClass.convertGray(mRgba.getNativeObjAddr(), mGray.getNativeObjAddr());
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            // Initial bitmap
-            Bitmap bitmap = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.ARGB_8888);
-
-            // Convert Mat image to bitmap for display result
-            Utils.matToBitmap(mGray, bitmap);
-
-            // Display result on imageview
-            ImageView iv = (ImageView) findViewById(R.id.result_image);
-            iv.setImageBitmap(bitmap);
-        }
-
-    }
 
 }
