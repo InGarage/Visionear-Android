@@ -16,6 +16,7 @@
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
             android:hardwareAccelerated="false"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:vmSafeMode="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

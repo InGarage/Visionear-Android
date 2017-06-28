@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.highgui.Highgui;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 //CameraBridgeViewBase.CvCameraViewListener2
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     SurfaceView mPreview;
     public int height,width, mode = 0, max_mode = 1;
     public String str_mode[];
+    private AsyncTask mTask;
 
     static{
         System.loadLibrary("MyOpencvLibs");
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("CameraSystem", "onCreate");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -127,30 +131,74 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         final TextView result_text = (TextView)findViewById(R.id.result_text);
 
+
     }
 
     @Override
     protected void onPause() {
+        Log.d("CameraSystem", "onPause");
         super.onPause();
         mCamera.setPreviewCallback(null);
         mCamera.release();
+        // stop asynctask
+        if (mTask != null && mTask.getStatus() != AsyncTask.Status.FINISHED){
+            mTask.cancel(true);
+        }
+        surfaceDestroyed(mPreview.getHolder());
+
     }
 
     @Override
     protected void onDestroy() {
+        Log.d("CameraSystem", "onDestroy");
         super.onDestroy();
+        RelativeLayout main = (RelativeLayout)findViewById(R.id.main_layout);
+        main.removeView(mPreview);
+        if(mCamera != null){
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+        }
     }
 
     @Override
     protected void onResume() {
+        Log.d("CameraSystem", "onResume");
+
         super.onResume();
+        mPreview = (SurfaceView)findViewById(R.id.preview);
+        mPreview.getHolder().addCallback(this);
+        mPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         if(OpenCVLoader.initDebug()){
             Log.i(TAG,"Opencv loaded successfully");
             mCamera = Camera.open();
+
+            Log.d("CameraSystem","surfaceCreated");
+            try {
+                mCamera.setPreviewDisplay(mPreview.getHolder());
+                mCamera.setDisplayOrientation(90);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("CameraSystem","surfaceChanged");
+            Camera.Parameters params = mCamera.getParameters();
+            Camera.Size size = params.getPreviewSize();
+            this.height = size.height;
+            this.width = size.width;
+            mCamera.setParameters(params);
+            mCamera.setPreviewCallback(this);
+            try {
+                mCamera.setPreviewDisplay(mPreview.getHolder());
+                mCamera.startPreview();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
         else{
             Log.i(TAG,"Opencv not loaded");
         }
+
     }
 
 
@@ -190,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d("CameraSystem","surfaceDestroyed");
         mRgba.release();
         mGray.release();
     }
@@ -223,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     public void con_opencv(final int mode){
-        new AsyncTask<Void, Void, Integer>() {
+        mTask = new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... params) {
                 // Call Native Class
